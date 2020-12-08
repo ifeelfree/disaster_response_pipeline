@@ -30,6 +30,10 @@ def process_data(message_file_name, category_file_name, db_file_name):
         categories[column] = categories[column].astype(str).str[-1]
         categories[column] = categories[column].astype(int)
 
+    for index, row in categories.iterrows():
+        if row['related']>1:
+            row['related']=1
+
     new_df = df.drop(['categories'], axis=1)
     df = pd.concat([new_df, categories],  axis=1)
 
@@ -41,7 +45,7 @@ def process_data(message_file_name, category_file_name, db_file_name):
     # step 4: generate the database
     table_name = "disaster_response_table"
     engine = create_engine('sqlite:///' + db_file_name)
-    cleaned_df.to_sql(table_name, engine, index=False)
+    cleaned_df.to_sql(table_name, engine, index=False, if_exists='replace')
 
 if __name__ == "__main__":
     import argparse
